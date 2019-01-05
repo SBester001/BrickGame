@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 
 
 public class Game extends JFrame {
-	public static String version = "1.0.1";
+	public static String version = "1.0.0";
 
 	public static Game game;
 	
