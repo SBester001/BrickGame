@@ -67,6 +67,7 @@ public class Game extends JFrame {
 		addKeyListener((new MyKeyListener()));
 	}
 	
+	
 	void start(){		
 		try {
 			Thread.sleep(40); // ohne Pause wird g.drawRect nicht richtig ausgeführt
@@ -87,7 +88,7 @@ public class Game extends JFrame {
 		
 		while (true) {
 			while(go){
-				move(g);
+				move(g, speedx, speedy);
 				try {
 					Thread.sleep(20);
 				} catch (InterruptedException e) {
@@ -103,7 +104,7 @@ public class Game extends JFrame {
 		}
 	}
 	
-	void move(Graphics g){
+	void move(Graphics g, int speedx, int speedy){
 		clear(g);
 		bx += speedx;
 		by += speedy;
@@ -111,38 +112,38 @@ public class Game extends JFrame {
 		g.fillRect(barx, bary, barSizex, barSizey);
 		
 		if(bx < posx){ 			//left side
-			speedx *= -1;
+			this.speedx *= -1;
 			bx = posx;
 		}
 		
 		if(bx > sizex+posx){ 	//right side
-			speedx *= -1;
+			this.speedx *= -1;
 			bx = sizex+posx;
 		}
 		
 		if(by < posy){			//upper side
-			speedy *= -1;
+			this.speedy *= -1;
 			by = posy;
 		}
 		
 		if(by > sizey+posy){	//bottom side -> check if bar is there
 			by = sizey+posy;	
 			if((bx>=barx && bx<=barx+barSizex)||test) { // bar is there
-				speedy *= -1;						
+				this.speedy *= -1;						
 				if(rnd.nextBoolean()) {				
-					if(speedx>0) {
-						speedx += addSpeed;
+					if(this.speedx>0) {
+						this.speedx += addSpeed;
 					}else {
-						speedx -= addSpeed;
+						this.speedx -= addSpeed;
 					}
 				}else {
-					if(speedy>0) {
-						speedy += addSpeed;
+					if(this.speedy>0) {
+						this.speedy += addSpeed;
 					}else {
-						speedy -= addSpeed;
+						this.speedy -= addSpeed;
 					}
 				}				
-				System.out.println("speedx:"+ speedx +"speedy:" + speedy);
+				System.out.println("speedx:"+ this.speedx +"speedy:" + this.speedy);
 				score++;
 			}else {
 				g.setColor(Color.red);
