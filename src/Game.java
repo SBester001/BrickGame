@@ -1,28 +1,40 @@
+import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 
+@SuppressWarnings("serial")
 public class Game extends JFrame {
 	public static String version = "1.0.0";
 
 	public static Game game;
 	
-	public static final int sizex = 1150;
-	public static final int sizey = 850;
-	public static final int posx = 50;
-	public static final int posy = 50;
-	public static final int bsize = 8;
+	public static int sizex = 1150;
+	public static int sizey = 850;
+	public static int posx = 50;
+	public static int posy = 50;
+	public static int bsize = 8;
+	
+	Image background;
 			
 	Random rnd = new Random();
 	int bx; //Position of the ball
@@ -38,6 +50,7 @@ public class Game extends JFrame {
 	int bary = posy+sizey+barSizey-1;
 	
 	boolean go; //ball is rolling
+	boolean exitEasterEgg = false;
 	
 	int score = 0;
 	
@@ -47,12 +60,12 @@ public class Game extends JFrame {
 	
 	public static void main(String[] args) {
 		game = new Game();
-		game.start();
 	}
 	
 	Game(){
 		super();
 		setSize(sizex+(posx*2), sizey+(posy*2));
+		setLocationRelativeTo(null);
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -65,10 +78,85 @@ public class Game extends JFrame {
 		setIconImages(imgs);
 		addMouseMotionListener(new MyMouseMotionAdapter());
 		addKeyListener((new MyKeyListener()));
+		
+		background = getContentPane().createImage(getWidth(), getHeight());
+		
+		start(getGraphics());
 	}
 	
+	Game(JFrame f){
+		super();
+		
+		//save Components
+		Container cPane = f.getContentPane();
+		ArrayList<Component> comp = new ArrayList<Component>();
+		for(int i = 0; i < cPane.getComponentCount(); i++) {
+			comp.add(cPane.getComponent(i));
+		}
+		
+		//save attributes
+		Dimension size = f.getSize();
+		Point location = f.getLocation();
+		boolean resizable = f.isResizable();
+		boolean visible = f.isVisible();
+		String title = f.getTitle();
+		boolean focusable = f.isFocusable();
+		
+		//get image for background
+		Robot robby = null;
+		try {
+		robby = new Robot();
+		} catch (AWTException e) {}
+		background = robby.createScreenCapture(new Rectangle((int)location.getX(),(int)location.getY(),(int)size.getWidth(),(int)size.getHeight()));
+		/*BufferedImage image = new BufferedImage((int)size.getWidth(),(int)size.getHeight(),BufferedImage.TYPE_INT_RGB);
+		f.printAll(image.createGraphics());*/
+		
+		
+		//clear Components
+		cPane.removeAll();
+		
+		//edit attributes
+		//f.setSize(sizex+(posx*2), sizey+(posy*2));
+		sizex = size.width-(posx*2);
+		sizey = size.height-(posy*2);
+		bary = posy+sizey+barSizey-1;
+		f.setLocationRelativeTo(null);
+		//f.setResizable(false); //--> if not resizable the size is bigger?!
+		f.setVisible(true);
+		f.setTitle(title + " with a small Game by Steffen Beschta v."+ version);
+		f.setFocusable(true);
+		f.requestFocusInWindow();
+		
+		//add Listeners
+		MyMouseMotionAdapter mouseAdapter = new MyMouseMotionAdapter();
+		f.addMouseMotionListener(mouseAdapter);
+		MyKeyListener keyListener = new MyKeyListener();
+		f.addKeyListener(keyListener);
+		
+		setSize(size);
+		
+		start(f.getGraphics()); //start the game in the JFrame f
+		
+		//reset Components
+		for(int i = 0; i < comp.size(); i++) {
+			cPane.add(comp.get(i));
+		}
+		cPane.repaint();
+		
+		//reset attributes
+		//f.setSize(size);
+		f.setLocation(location);
+		f.setResizable(resizable);
+		f.setVisible(visible);
+		f.setTitle(title);
+		f.setFocusable(focusable);
+		
+		//remove Listeners
+		f.removeMouseMotionListener(mouseAdapter);
+		f.removeKeyListener(keyListener);
+	}
 	
-	void start(){		
+	private void start(Graphics g){		
 		try {
 			Thread.sleep(40); // ohne Pause wird g.drawRect nicht richtig ausgeführt
 		} catch (InterruptedException e) {
@@ -82,12 +170,11 @@ public class Game extends JFrame {
 		by = posy;
 		go = true;
 		
-		Graphics g = getGraphics();	
 		g.drawRect(posx-1, posy-1, sizex+bsize+1, sizey+bsize+1);
 		g.fillOval(bx, by, bsize, bsize);
 		
-		while (true) {
-			while(go){
+		while (!exitEasterEgg) {
+			while(go && !exitEasterEgg){
 				move(g, speedx, speedy);
 				try {
 					Thread.sleep(20);
@@ -160,8 +247,16 @@ public class Game extends JFrame {
 	}
 	
 	void clear(Graphics g){
-		g.clearRect(posx, posy, sizex+bsize, sizey+bsize);
-		g.clearRect(0, bary, sizex+(posx*2), barSizey);
+		g.drawImage(background, 0, 0, new ImageObserver() {
+			
+			@Override
+			public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		});
+		g.drawRect(posx-1, posy-1, sizex+bsize+1, sizey+bsize+1);
+		
 	}
 	
 	 void restart() {
@@ -210,14 +305,18 @@ public class Game extends JFrame {
 		int bug = 0;
 
 		@Override
-		public void keyPressed(KeyEvent arg0) {}
+		public void keyPressed(KeyEvent ev) {}
 
 		@Override
-		public void keyReleased(KeyEvent arg0) {}
+		public void keyReleased(KeyEvent ev) {
+			if(ev.getKeyCode() == KeyEvent.VK_ESCAPE) { 
+				exitEasterEgg = true;
+			}
+		}
 
 		@Override
-		public void keyTyped(KeyEvent arg0) {
-			switch(arg0.getKeyChar()) {
+		public void keyTyped(KeyEvent ev) {
+			switch(ev.getKeyChar()) {
 			
 			case 'r': 
 				restart();
@@ -260,7 +359,7 @@ public class Game extends JFrame {
 			default:
 				test = 0;
 				bug = 0;
-			}				
+			}
 		}	
 	}
 }
