@@ -120,7 +120,6 @@ public class Game extends JFrame {
 		sizex = size.width-(posx*2);
 		sizey = size.height-(posy*2);
 		bary = posy+sizey+barSizey-1;
-		f.setLocationRelativeTo(null);
 		//f.setResizable(false); //--> if not resizable the size is bigger?!
 		f.setVisible(true);
 		f.setTitle(title + " with a small Game by Steffen Beschta v."+ version);
@@ -145,7 +144,6 @@ public class Game extends JFrame {
 		
 		//reset attributes
 		//f.setSize(size);
-		f.setLocation(location);
 		f.setResizable(resizable);
 		f.setVisible(visible);
 		f.setTitle(title);
