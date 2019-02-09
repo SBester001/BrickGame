@@ -20,6 +20,8 @@ import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 
 @SuppressWarnings("serial")
@@ -34,7 +36,7 @@ public class Game extends JFrame {
 	public static int posy = 50;
 	public static int bsize = 8;
 	
-	Image background;
+	BufferedImage background;
 			
 	Random rnd = new Random();
 	int bx; //Position of the ball
@@ -55,6 +57,8 @@ public class Game extends JFrame {
 	int score = 0;
 	
 	boolean test; //if true you can not lose
+	
+	JFrame frame = this;
 	
 
 	
@@ -79,13 +83,14 @@ public class Game extends JFrame {
 		addMouseMotionListener(new MyMouseMotionAdapter());
 		addKeyListener((new MyKeyListener()));
 		
-		background = getContentPane().createImage(getWidth(), getHeight());
+		background = (BufferedImage) getContentPane().createImage(getWidth(), getHeight());
 		
 		start(getGraphics());
 	}
 	
 	Game(JFrame f){
 		super();
+		frame = f;
 		
 		//save Components
 		Container cPane = f.getContentPane();
@@ -126,24 +131,25 @@ public class Game extends JFrame {
 		f.setFocusable(true);
 		f.requestFocusInWindow();
 		
+		//set Background
+		f.add(new JLabel(new ImageIcon(background)));
+		
 		//add Listeners
 		MyMouseMotionAdapter mouseAdapter = new MyMouseMotionAdapter();
 		f.addMouseMotionListener(mouseAdapter);
 		MyKeyListener keyListener = new MyKeyListener();
 		f.addKeyListener(keyListener);
 		
-		setSize(size);
-		
 		start(f.getGraphics()); //start the game in the JFrame f
 		
 		//reset Components
+		cPane.removeAll();
 		for(int i = 0; i < comp.size(); i++) {
 			cPane.add(comp.get(i));
 		}
 		cPane.repaint();
 		
 		//reset attributes
-		//f.setSize(size);
 		f.setResizable(resizable);
 		f.setVisible(visible);
 		f.setTitle(title);
@@ -245,14 +251,13 @@ public class Game extends JFrame {
 	}
 	
 	void clear(Graphics g){
-		g.drawImage(background, 0, 0, new ImageObserver() {
-			
-			@Override
-			public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		});
+		//g.clearRect(posx, posy, sizex+bsize, sizey+bsize);
+		//g.clearRect(0, bary, sizex+(posx*2), barSizey);
+		Image subImg = background.getSubimage(0, bary, sizex+(posx*2), barSizey);
+		g.drawImage(subImg, 0, bary, sizex+(posx*2), barSizey, null); //clear bar
+		
+		subImg = background.getSubimage(bx, by, bsize, bsize);
+		g.drawImage(subImg, bx, by, bsize, bsize, null); //clear ball
 		g.drawRect(posx-1, posy-1, sizex+bsize+1, sizey+bsize+1);
 		
 	}
@@ -260,6 +265,7 @@ public class Game extends JFrame {
 	 void restart() {
 		System.out.println("restart");
 		go = false;
+		frame.getGraphics().drawImage(background, 0, 0, frame.getSize().width, frame.getSize().height, null); //clear all
 		
 		//starting values
 		test = false;
