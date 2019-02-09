@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 
 
 @SuppressWarnings("serial")
-public class Game extends Thread {
+public class Game extends JFrame {
 	public static String version = "1.0.0";
 
 	public static Game game;
@@ -58,7 +58,7 @@ public class Game extends Thread {
 	
 	boolean test; //if true you can not lose
 	
-	JFrame frame = new JFrame();
+	JFrame frame = this;
 	
 
 	
@@ -68,24 +68,24 @@ public class Game extends Thread {
 	
 	Game(){
 		super();
-		frame.setSize(sizex+(posx*2), sizey+(posy*2));
-		frame.setLocationRelativeTo(null);
-		frame.setResizable(false);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("Small Game by Steffen Beschta v."+ version);
+		setSize(sizex+(posx*2), sizey+(posy*2));
+		setLocationRelativeTo(null);
+		setResizable(false);
+		setVisible(true);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setTitle("Small Game by Steffen Beschta v."+ version);
 		List <Image> imgs = new ArrayList<Image>();
 		imgs.add(new ImageIcon(getClass().getResource("resources/BrickGame_img_128x128.png")).getImage());
 		imgs.add(new ImageIcon(getClass().getResource("resources/BrickGame_img_64x64.png")).getImage());
 		imgs.add(new ImageIcon(getClass().getResource("resources/BrickGame_img_32x32.png")).getImage());
 		imgs.add(new ImageIcon(getClass().getResource("resources/BrickGame_img_16x16.png")).getImage());
-		frame.setIconImages(imgs);
-		frame.addMouseMotionListener(new MyMouseMotionAdapter());
-		frame.addKeyListener((new MyKeyListener()));
+		setIconImages(imgs);
+		addMouseMotionListener(new MyMouseMotionAdapter());
+		addKeyListener((new MyKeyListener()));
 		
-		background = (BufferedImage) frame.getContentPane().createImage(frame.getWidth(), frame.getHeight());
+		background = (BufferedImage) getContentPane().createImage(getWidth(), getHeight());
 		
-		start();
+		start(getGraphics());
 	}
 	
 	Game(JFrame f){
@@ -131,13 +131,16 @@ public class Game extends Thread {
 		f.setFocusable(true);
 		f.requestFocusInWindow();
 		
+		//set Background
+		f.add(new JLabel(new ImageIcon(background)));
+		
 		//add Listeners
 		MyMouseMotionAdapter mouseAdapter = new MyMouseMotionAdapter();
 		f.addMouseMotionListener(mouseAdapter);
 		MyKeyListener keyListener = new MyKeyListener();
 		f.addKeyListener(keyListener);
 		
-		start(); //start the game in the JFrame f
+		start(f.getGraphics()); //start the game in the JFrame f
 		
 		//reset Components
 		cPane.removeAll();
@@ -157,27 +160,23 @@ public class Game extends Thread {
 		f.removeKeyListener(keyListener);
 	}
 	
-	@Override
-	public void run(){		
+	private void start(Graphics g){		
 		try {
-			sleep(40); // ohne Pause wird g.drawRect nicht richtig ausgeführt
+			Thread.sleep(40); // ohne Pause wird g.drawRect nicht richtig ausgeführt
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		//starting values
-		/*test = false;
+		test = false;
 		speedx = 7;
 		speedy = 7;
 		bx = posx;
 		by = posy;
 		go = true;
+		
 		g.drawRect(posx-1, posy-1, sizex+bsize+1, sizey+bsize+1);
-		g.fillOval(bx, by, bsize, bsize);*/
+		g.fillOval(bx, by, bsize, bsize);
 		
-		restart();
-		
-		Graphics g = frame.getGraphics();
-			
 		while (!exitEasterEgg) {
 			while(go && !exitEasterEgg){
 				move(g, speedx, speedy);
