@@ -158,6 +158,8 @@ public class Game extends JFrame {
 		//remove Listeners
 		f.removeMouseMotionListener(mouseAdapter);
 		f.removeKeyListener(keyListener);
+		
+		f.repaint();
 	}
 	
 	private void start(Graphics g){		
