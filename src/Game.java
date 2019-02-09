@@ -24,7 +24,7 @@ import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
 public class Game extends JFrame {
-	public static String version = "1.0.0";
+	public static String version = "1.1.0";
 
 	public static Game game;
 	
@@ -71,7 +71,7 @@ public class Game extends JFrame {
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Small Game by Steffen Beschta v."+ version);
+		setTitle("Small Game by SBester001 v."+ version);
 		List <Image> imgs = new ArrayList<Image>();
 		imgs.add(new ImageIcon(getClass().getResource("resources/BrickGame_img_128x128.png")).getImage());
 		imgs.add(new ImageIcon(getClass().getResource("resources/BrickGame_img_64x64.png")).getImage());
@@ -125,7 +125,7 @@ public class Game extends JFrame {
 		bary = posy+sizey+barSizey-1;
 		//f.setResizable(false); //--> if not resizable the size is bigger?!
 		f.setVisible(true);
-		f.setTitle(title + " with a small Game by Steffen Beschta v."+ version);
+		f.setTitle(title + " with a small Game by SBester001 v."+ version);
 		f.setFocusable(true);
 		f.requestFocusInWindow();
 		
