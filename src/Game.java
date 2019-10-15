@@ -42,6 +42,7 @@ public class Game extends JFrame {
 	int speedx; //Speed of the ball
 	int speedy;
 	int addSpeed = 1; //Speed added every touch
+	int totalSpeed = 10;
 	
 	//Position of the bar
 	int barSizex = 100;
@@ -181,7 +182,7 @@ public class Game extends JFrame {
 			while(go && !exitEasterEgg){
 				move(g, speedx, speedy);
 				try {
-					Thread.sleep(20);
+					Thread.sleep(20); //todo 20
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -220,7 +221,7 @@ public class Game extends JFrame {
 		if(by > sizey+posy){	//bottom side -> check if bar is there
 			by = sizey+posy;	
 			if((bx>=barx && bx<=barx+barSizex)||test) { // bar is there
-				this.speedy *= -1;						
+				/*this.speedy *= -1;						
 				if(rnd.nextBoolean()) {				
 					if(this.speedx>0) {
 						this.speedx += addSpeed;
@@ -233,7 +234,12 @@ public class Game extends JFrame {
 					}else {
 						this.speedy -= addSpeed;
 					}
-				}				
+				}*/
+				//totalSpeed = (int) Math.round(Math.sqrt(Math.pow(speedx, 2)+Math.pow(speedy, 2))); //todo runde
+				totalSpeed += addSpeed;
+				System.out.print("total speed:"+totalSpeed+" ");
+				this.speedx = rnd.nextInt((totalSpeed*2)-1) - (totalSpeed - 1);
+				this.speedy = -(int) Math.round(Math.sqrt(Math.pow(totalSpeed, 2) - Math.pow(this.speedx, 2)));
 				System.out.println("speedx:"+ this.speedx +"speedy:" + this.speedy);
 				score++;
 			}else {
