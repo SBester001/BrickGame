@@ -24,7 +24,7 @@ import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
 public class Game extends JFrame {
-	public static String version = "1.1.0";
+	public static String version = "1.2.0";
 
 	public static Game game;
 	
@@ -182,7 +182,9 @@ public class Game extends JFrame {
 			while(go && !exitEasterEgg){
 				move(g, speedx, speedy);
 				try {
-					Thread.sleep(20); //todo 20
+					Thread.sleep(20); //just for testing:
+					/*Thread.sleep(2);
+					test = true;*/
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -257,8 +259,6 @@ public class Game extends JFrame {
 	}
 	
 	void clear(Graphics g){
-		//g.clearRect(posx, posy, sizex+bsize, sizey+bsize);
-		//g.clearRect(0, bary, sizex+(posx*2), barSizey);
 		Image subImg = background.getSubimage(0, bary, sizex+(posx*2), barSizey);
 		g.drawImage(subImg, 0, bary, sizex+(posx*2), barSizey, null); //clear bar
 		
